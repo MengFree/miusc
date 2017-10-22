@@ -9,7 +9,7 @@ module.exports = {
     env: {
         browser: true,
     },
-    extends: 'airbnb-base',
+    extends: 'eslint:recommended',
     // required to lint *.vue files
     plugins: [
         'html'
@@ -44,5 +44,6 @@ module.exports = {
             "double"
         ],
         "eol-last": 0,
+        "no-console": 0
     }
 }
