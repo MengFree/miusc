@@ -65,15 +65,18 @@ export default {
   computed: {},
   // 挂载后
   mounted() {
-    //   this.$api.getList().then((res)=>{
-    //       this.lists.push(res);
-    //   });
-      this.$api.getPlaylists().then(res=>{
+      this.$api.getList().then((res)=>{
           this.lists.push({
               title:'推荐歌单',
-              playlists:res.data.playlists
-          })
-      })
+              playlists:res.playlists
+          });
+      });
+      // this.$api.getPlaylists().then(res=>{
+      //     this.lists.push({
+      //         title:'推荐歌单',
+      //         playlists:res.data.playlists
+      //     })
+      // })
   },
   // 方法
   methods: {}
@@ -83,7 +86,7 @@ export default {
 .music-wrapper {
   width: 100%;
   position: absolute;
-  top: 87px;
+  top: 0;
   bottom: 0;
   overflow: hidden;
   background: #fff;
@@ -93,6 +96,7 @@ export default {
     color: #fff;
     font-size: 30px;
     text-align: center;
+    overflow: hidden;
 
     img {
       width: 100%;

@@ -17,14 +17,15 @@
             </li>
         </ul>
         <keep-alive>
-            <router-view></router-view>
+            <router-view class="body"></router-view>
         </keep-alive>
+        <footMenu></footMenu>
     </div>
 </template>
 
 <script>
 // import { mapState, mapActions } from 'vuex';
-// import scroll from "./base/scroll";
+import footMenu from "./base/footMenu";
 
 export default {
   name: "home",
@@ -48,11 +49,13 @@ export default {
           name: "电台",
           path: "/radio"
         }
-      ],
+      ]
     };
   },
   // 组件
-  components: {},
+  components: {
+    footMenu
+  },
   // 计算属性
   computed: {},
   // 挂载后
@@ -61,7 +64,7 @@ export default {
   methods: {
     toggle(index) {
       this.on = index;
-      this.$router.push(this.tabs[index].path)
+      this.$router.push(this.tabs[index].path);
     },
     loadData() {
       console.log("loadData");
@@ -74,6 +77,16 @@ export default {
 };
 </script>
 <style scoped lang='stylus'  rel="stylesheet/stylus">
+.home {
+    .body {
+        position: fixed;
+        top: 86px;
+        bottom: 40px;
+        left: 0;
+        right: 0;
+    }
+}
+
 .wrapper {
     width: 100%;
     height: 220px;
@@ -91,8 +104,6 @@ export default {
         margin: 5px 0;
     }
 }
-
-
 
 .search {
     background: #d43b33;
@@ -150,7 +161,7 @@ export default {
 
 .MUU {
     display: flex;
-        box-shadow: 0px 2px 4px 0px #ececec;
+    box-shadow: 0px 2px 4px 0px #ececec;
 
     .head-li {
         flex: 1;

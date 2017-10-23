@@ -10,6 +10,10 @@
                     <div class="item-content">
                         {{l.name}}
                     </div>
+                    <span class="count">
+                      <i class="icon ion-headphone"></i>
+                      {{getCount(l.playCount)}}
+                    </span>
                 </li>
             </ul>
         </div>
@@ -38,7 +42,14 @@ export default {
   // 挂载后
   mounted() {},
   // 方法
-  methods: {}
+  methods: {
+    getCount(count) {
+      if (count < 100000) {
+        return count;
+      }
+      return parseInt(count / 10000) + "万";
+    }
+  }
 };
 </script>
 <style scoped lang='less'>
@@ -82,19 +93,17 @@ export default {
       min-height: 154px;
       display: inline-block;
       width: 33%;
-      // margin-left: 2.5%;
+      position: relative;
       margin-bottom: 2.5%;
       box-sizing: border-box;
       vertical-align: top;
-
       &.mid {
-        margin: 0 .5%;
+        margin: 0 0.5%;
       }
-
       img {
+        box-shadow: inset 0px 4px 10px 0px #e6e6e6;
         width: 100%;
       }
-
       .item-content {
         height: 38px;
         word-wrap: break-word;
@@ -109,6 +118,22 @@ export default {
         letter-spacing: 1px;
         text-align: left;
         padding: 0 5px;
+      }
+      .count {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        text-align: right;
+        font-size: 12px;
+        color: #fff;
+        // box-shadow: inset 0px 4px 10px 0px #e6e6e6;
+        padding: 4px 8px;
+        .icon{
+          font-size: 10px;
+          top: -2px;
+          left: 3px;
+        }
       }
     }
   }
