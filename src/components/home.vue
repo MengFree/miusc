@@ -3,88 +3,66 @@
         <div class="search">
             <div class="yuyin"></div>
             <div class="input">
-                <input type="text" value="" placeholder="搜索音乐、歌曲、电台" id="inputvalue">
+                <i class="icon ion-ios-search"></i>
+                <input type="text" value="" placeholder="搜索音乐、视频、歌词、电台" id="inputvalue">
             </div>
             <div class="music">
                 <span v-show="lshow">取消</span>
                 <img src="../assets/img/ph.png" alt="" >
             </div>
-        </div>
-       <div class="hello-wrapper" ref="helloWrapper">
-            <div class="hello">
-                <div class="swipe-wrapper">
-                    <div class="my-swipe">
-                        <div class="slide1">
-                            <img src="../assets/img/1.png" alt="">
-                        </div>
-                    </div>
-                </div>
-                <div class="cards border-1px">
-                    <div class="card-li">
-                        <div class="circle">
-                        </div>
-                        <p>私人FM</p>
-                    </div>
-                    <div class="card-li">
-                        <div class="circle">
-                        <span>20</span>
-                        </div>
-                        <p>每日歌曲推荐</p>
-                    </div>
-                    <div class="card-li">
-                        <div class="circle">
-                        </div>
-                        <p>云音乐热歌榜</p>
-                    </div>
-                </div>
-                <div class="music-list">
-                    <ul class="list-ul">
-                        <li>
-                            <img src='../assets/img/logo.png' alt=""/>
-                            <div class="item-content">
-                                ddasddd
-                            </div>
-                        </li>
-                        <li>
-                            <img src='../assets/img/logo.png' alt=""/>
-                            <div class="item-content">
-                                ddasddd
-                            </div>
-                        </li>
-                        <li>
-                            <img src='../assets/img/logo.png' alt=""/>
-                            <div class="item-content">
-                                ddasddd
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+        </div> 
+        <ul class="MUU">
+            <li v-for="(tab,index) in tabs" :key="tab.path" class="head-li"  :class="{on:on==index}" @click="toggle(index)">
+                <span>{{tab.name}}</span>
+            </li>
+        </ul>
+        <keep-alive>
+            <router-view></router-view>
+        </keep-alive>
     </div>
 </template>
 
 <script>
 // import { mapState, mapActions } from 'vuex';
+// import scroll from "./base/scroll";
 
 export default {
   name: "home",
   data() {
     return {
       msg: "msg",
-      data: [1, 2, 3, 4, 5, 6]
+      data: [1, 2, 3, 4, 5, 6],
+      Classmove: "classmove0",
+      lshow: false,
+      on: 0,
+      tabs: [
+        {
+          name: "音乐",
+          path: "/"
+        },
+        {
+          name: "视频",
+          path: "/video"
+        },
+        {
+          name: "电台",
+          path: "/radio"
+        }
+      ],
     };
   },
   // 组件
-  components: {
-    scroll
-  },
+  components: {},
   // 计算属性
   computed: {},
   // 挂载后
   mounted() {},
   // 方法
   methods: {
+    toggle(index) {
+      this.on = index;
+      this.$router.push(this.tabs[index].path)
+    },
     loadData() {
       console.log("loadData");
       let newData = this.data.map((num, index) => {
@@ -114,129 +92,10 @@ export default {
     }
 }
 
-.hello-wrapper {
-    width: 100%;
-    position: absolute;
-    top: 87px;
-    bottom: 0;
-    overflow: hidden;
-    background: #fff;
 
-    .my-swipe {
-        height: 139px;
-        color: #fff;
-        font-size: 30px;
-        text-align: center;
-
-        img {
-            width: 100%;
-        }
-    }
-
-    .cards {
-        border-1px(#ddd);
-
-        .card-li {
-            display: inline-block;
-            width: 30%;
-            margin-left: 2.5%;
-            margin-top: 10px;
-            margin-bottom: 10px;
-
-            .circle {
-                position: relative;
-                width: 58%;
-                margin: 0 auto;
-                height: 0;
-                padding-top: 58%;
-                border-radius: 50%;
-                border: 1px solid #d33a31;
-
-                span {
-                    position: absolute;
-                    left: 50%;
-                    top: 50%;
-                    margin-left: -15px;
-                    margin-top: -15px;
-                    width: 30px;
-                    height: 30px;
-                    line-height: 30px;
-                    text-align: center;
-                    font-size: 20px;
-                    color: #d33a31;
-                }
-            }
-
-            p {
-                color: #333;
-                font-size: 10px;
-                text-align: center;
-                margin-top: 5px;
-            }
-        }
-
-        .card-li:nth-child(1) {
-            .circle {
-                background: url('../assets/img/FM.png') no-repeat;
-                background-size: 50px 50px;
-                background-position: center;
-            }
-        }
-
-        .card-li:nth-child(3) {
-            .circle {
-                background: url('../assets/ph.png') no-repeat;
-                background-size: 50px 50px;
-                background-position: center;
-            }
-        }
-    }
-
-    .music-list {
-        .loading {
-            width: 100px;
-            height: 100px;
-            margin: 10px auto 0 auto;
-
-            img {
-                -webkit-animation: rotating 3s linear 0.3s infinite;
-                animation: rotating 3s linear 0.3s infinite;
-            }
-        }
-
-        .list-ul li {
-            /* float: left; */
-            min-height: 154px;
-            display: inline-block;
-            width: 30%;
-            margin-left: 2.5%;
-            margin-bottom: 2.5%;
-            box-sizing: border-box;
-            vertical-align: top;
-
-            img {
-                width: 100%;
-            }
-
-            .item-content {
-                height: 38px;
-                word-wrap: break-word;
-                overflow: hidden;
-                display: -webkit-box;
-                text-overflow: ellipsis;
-                -webkit-line-clamp: 2;
-                -webkit-box-orient: vertical;
-                font-size: 12px;
-                color: #333;
-                line-height: 1.5;
-                letter-spacing: 1px;
-            }
-        }
-    }
-}
 
 .search {
-    background: #d43c33;
+    background: #d43b33;
     height: 46px;
     display: flex;
 
@@ -249,14 +108,24 @@ export default {
 
     .input {
         flex: 1;
+        position: relative;
+
+        .icon {
+            position: absolute;
+            left: 40px;
+            top: 50%;
+            transform: translateY(-51%);
+            font-size: 20px;
+            color: #c6c7c9;
+        }
 
         input {
             width: 80%;
             height: 30px;
-            border-radius: 5px;
+            border-radius: 15px;
             margin-top: 8px;
             color: #c6c7c9;
-            font-size: 12px;
+            font-size: 14px;
             padding-left: 60px;
         }
     }
@@ -276,6 +145,43 @@ export default {
             margin-left: 10px;
             margin-top: 13px;
         }
+    }
+}
+
+.MUU {
+    display: flex;
+        box-shadow: 0px 2px 4px 0px #ececec;
+
+    .head-li {
+        flex: 1;
+        display: inline-block;
+        box-sizing: border-box;
+        width: 100px;
+        height: 40px;
+        font-size: 16px;
+        text-align: center;
+        line-height: 40px;
+        background: #f8f8f9;
+        color: #333;
+
+        &.on {
+            color: #d43934;
+
+            span {
+                display: inline-block;
+                border-bottom: 3px solid #d43934;
+                padding: 0 4px;
+                height: 38px;
+            }
+        }
+
+        &.active {
+            color: #d43934;
+        }
+    }
+
+    .head-li:nth-child(4) {
+        border-right: 0;
     }
 }
 </style>

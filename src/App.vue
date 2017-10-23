@@ -24,8 +24,10 @@ export default {
 
 <style lang="less">
 @import './assets/css/reset.css';
+@import './assets/css/ionicons.min.css';
 #app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  // font-family: "Avenir", Helvetica, Arial, sans-serif;
+  font-family:  -apple-system, BlinkMacSystemFont,"Microsoft YaHei", "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -47,5 +49,22 @@ export default {
     right: 0;
     text-align: center;
   }
+}
+.icon {
+    position: relative;
+    z-index: 0;
+    display: inline-block;
+    text-align: center;
+    font-weight: normal;
+    font-size: 20px;
+    vertical-align: middle;
+
+    &.ion-ios-arrow-right::before {
+        content: '\f3d3';
+    }
+
+    &.ion-ios-search::before {
+        content: '\f4a5';
+    }
 }
 </style>

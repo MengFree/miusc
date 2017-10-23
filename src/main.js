@@ -5,9 +5,11 @@ import App from './App';
 import router from './router';
 import store from './store';
 import http from './util/http'
+import * as api from './api'
 
 Vue.config.productionTip = false;
 Vue.prototype.$http = http;
+Vue.prototype.$api = api;
 /* eslint-disable no-new */
 new Vue({
     el: '#app',
