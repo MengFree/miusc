@@ -1,7 +1,7 @@
 <template>
    <div class="scroll " ref="wrapper">
        <slot>
-           <div></div>
+           <div class="scroll-body"></div>
        </slot>
    </div>
 </template>
@@ -47,7 +47,7 @@ export default {
        * 列表的数据
        */
     data: {
-      type: Array,
+      type: [Array,Object],
       default: null
     },
     /**

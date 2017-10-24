@@ -33,12 +33,18 @@ module.exports = {
         proxyTable: {
             '/163': {
                 target: 'http://music.163.com',
+                changeOrigin: true,
                 pathRewrite: {
                     '^/163': ''
                 },
+                headers: {
+                    'Referer': 'http://music.163.com',
+                    'Cookie': 'appver=1.5.2'
+                }
             },
             '/uat': {
                 target: 'http://10.10.10.255:5221',
+                changeOrigin: true,
                 pathRewrite: {
                     '^/uat': ''
                 }

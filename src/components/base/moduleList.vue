@@ -5,7 +5,7 @@
                 <span>{{list.title}}<i class="icon ion-ios-arrow-right"></i></span>
             </div>
             <ul class="list-ul">
-                <li v-for="(l,index) in list.playlists" :key="l.id" :class="{mid:((index+1)%3)==2}">
+                <li v-for="(l,index) in list.playlists" :key="l.id" :class="{mid:((index+1)%3)==2}" @click="toPlayList(l.id)">
                     <img :src='l.coverImgUrl' alt=""/>
                     <div class="item-content">
                         {{l.name}}
@@ -48,6 +48,15 @@ export default {
         return count;
       }
       return parseInt(count / 10000) + "万";
+    },
+    toPlayList(id){
+      // this.$router.push({
+      //   path:'/playList',
+      //   params:{
+      //     id:id
+      //   }
+      // });
+      this.$router.push('/playList/'+id)
     }
   }
 };

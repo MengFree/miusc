@@ -8,7 +8,9 @@
             </div>
             <div class="music">
                 <span v-show="lshow">取消</span>
-                <img src="../assets/img/ph.png" alt="" >
+                <router-link to="/player" tag="span">
+                    <img src="../assets/img/ph.png" alt="" >
+                </router-link>
             </div>
         </div> 
         <ul class="MUU">
@@ -25,7 +27,7 @@
 
 <script>
 // import { mapState, mapActions } from 'vuex';
-import footMenu from "./base/footMenu";
+import footMenu from "./base/home/footMenu";
 
 export default {
   name: "home",
@@ -59,7 +61,18 @@ export default {
   // 计算属性
   computed: {},
   // 挂载后
-  mounted() {},
+  mounted() {
+      this.$api.getSongUrl(410925920).then(res=>{
+          console.log('done')
+      }).catch(e=>{
+          console.log('error',e);
+      })
+      this.$api.test(410925920).then(res=>{
+          console.log('done')
+      }).catch(e=>{
+          console.log('error',e);
+      })
+  },
   // 方法
   methods: {
     toggle(index) {
@@ -81,7 +94,7 @@ export default {
     .body {
         position: fixed;
         top: 86px;
-        bottom: 40px;
+        bottom: 50px;
         left: 0;
         right: 0;
     }
