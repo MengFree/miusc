@@ -67,7 +67,7 @@ export default {
       }).catch(e=>{
           console.log('error',e);
       })
-      this.$api.test(410925920).then(res=>{
+      this.$api.test(410925921).then(res=>{
           console.log('done')
       }).catch(e=>{
           console.log('error',e);

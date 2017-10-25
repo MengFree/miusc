@@ -6,5 +6,8 @@ export default {
     },
     [types.LOADING]({ commit, state }, flag) {
         commit(types.LOADING, flag)
+    },
+    [types.TOGGLEPLAY]({ commit, state }, status) {
+        commit(types.TOGGLEPLAY, status)
     }
 }

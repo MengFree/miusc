@@ -1,56 +1,65 @@
 <template>
-    <div class="musicsong-wrapper" v-show="showFlag" key="musicsong">
+    <div class="musicsong-wrapper" key="musicsong">
       <div class="scroll-warpper">
         <div class="menu-title border-1px">
           <div class="back">
             <img src="../../static/img/back.png" alt="" width=24 height=24>
           </div>
           <div class="title-name">
-            {{song.name}}-
-            {{song.songname}}
+            {{song.name}}
+            <br />
+            <p>{{singer}}</p>
           </div>
           <div class="setting" >
             <img src="../../static/img/list-1.png" alt="" width=24 height=24>
           </div>
         </div>
         <div class="rotate">
-          <div class="rotate-img" :class="{'cd-paly':!playing}">
+          <div class="rotate-img" :class="{'cd-paly':playing}">
             <img src="../../static/img/stick_bg.png" alt="" height=140 >
           </div>
-          <div class="rotate-mid" :class="{'cd-rotate':!playing}">
-            <img :src="'../../static/img/ordert.jpg'" alt="">
+          <div class="rotate-mid" :class="{'cd-rotate':playing}">
+            <img :src="song.album.picUrl" alt="">
           </div>
         </div>
         <div class="bottom">
           <div class="menu">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
+            <span><i class="icon ion-ios-heart-outline"></i></span>
+            <span><i class="icon ion-ios-download-outline"></i></span>
+            <span><i class="icon ion-ios-chatbubble-outline"></i></span>
+            <span><i class="icon ion-android-more-vertical"></i></span>
           </div>
           <div class="progress">
-            <!-- <progressslider :mwidth="mwidth" @change="setTime"></progressslider> -->
+            <progressslider :mwidth="mwidth" @change="setTime"></progressslider>
             <div class="time">
               <span id="cur">{{time.start}}</span>
               <span id="total">{{time.end}}</span>
             </div>
           </div>
           <div class="action">
-            <span></span>
-            <span @click="pre"></span>
-            <span @click="togglePlay" :class="{'isplay':playing,'noplay':!playing}"></span>
-            <span @click="next"></span>
+            <span class="order">
+                <i class="icon ion-ios-reload"></i>
+            </span>
+            <span @click="pre" class="nextBtn preBtn">
+                <i class="icon ion-ios-play-outline"></i>
+            </span>
+            <span @click="togglePlay" class="playBtn">
+                <i class="icon" :class="{'ion-ios-pause':playing,'ion-ios-play':!playing}"></i>
+            </span>
+            <span @click="next" class="nextBtn">
+                <i class="icon ion-ios-play-outline"></i>
+            </span>
             <span @click="showlist"></span>
           </div>
         </div>
       </div>
       <div class="bg">
-        <img :src="'../../static/img/ordert.jpg'" alt="" width="100%" height="100%">
+        <img :src="song.album.blurPicUrl" alt="" width="100%" height="100%">
       </div>
       <div class="">
-        <!-- <audio :src="audiourl" id="audioPlay" @canplay="canPlaySong"
+        <audio :src="song.url" id="audioPlay" @canplay="canPlaySong" preload
                @timeupdate="updateTime"
-        ></audio> -->
+        ></audio>
       </div>
       <!-- <div class="tip" v-show="tipshow">
         <div class="content">
@@ -60,16 +69,16 @@
           确定
         </div>
       </div> -->
-      <div class="list">
+      <div class="list" v-show="showAction">
         <transition name="fade">
-          <div class="list-bg" @click="hidelist"  v-show="listshow"></div>
+          <div class="list-bg"  ></div>
         </transition >
         <transition name="fold">
-          <div class="list-song" v-show="listshow">
-            <div class="title" @click="nulllist">清空</div>
+          <div class="list-song" v-show="showAction">
+            <div class="title">清空</div>
             <div ref="songlistWrapper" class="ul-song">
               <ul>
-                <li v-for="(item,index) in list" class="li border-1px" @click="playsong(index,item)">
+                <li v-for="(item,index) in list" :key="item.songname" class="li border-1px" >
                   <div :class="{'active':item.songname === song.songname}">
                     <span>{{index}}</span>
                     <span>{{item.songname}}</span>
@@ -86,44 +95,115 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
+import progressslider from './base/progressslider'
 export default {
   name: "player",
   data() {
     return {
-      playing: false,
+      //   playing: true,
       showFlag: true,
+      showAction: false,
       list: [
         {
           songname: "songname",
           name: "name"
         }
       ],
-      song: {
-        songname: "songname",
-        name: "name"
+      //   song: {
+      //     songname: "songname",
+      //     name: "name"
+      //   },
+      time: {
+        start: '00:00',
+        end: '00:00'
       },
-      time:{
-          start:0,
-          end:0
-      }
+      mwidth:0
     };
   },
   // 组件
-  components: {},
+  components: {
+      progressslider
+  },
   // 计算属性
-  computed: {},
+  computed: {
+    ...mapState(["playing", "playList", "song"]),
+    singer: function() {
+      var name = [];
+      if (this.song && this.song.artists) {
+        for (var i = 0; i < this.song.artists.length; i++) {
+          name.push(this.song.artists[i].name);
+        }
+      }
+      return name.join("/");
+    }
+  },
   // 挂载后
   mounted() {},
   // 方法
   methods: {
     pre() {},
-    togglePlay() {},
+    togglePlay() {
+      // if(this.playing){
+      //     this.playing=false;
+      // }else{
+      //     this.playing=true;
+      // }
+      this.$store.dispatch("TOGGLEPLAY", !this.playing);
+      this.$nextTick(function() {
+        if (!this.playing) {
+          document.getElementById("audioPlay").pause();
+          console.log("pause");
+        } else {
+          console.log("play");
+          document.getElementById("audioPlay").play();
+        }
+      });
+    },
     next() {},
-    showlist() {}
+    showlist() {},
+    updateTime() {
+        var myaudio = document.getElementById('audioPlay');
+        var time = parseInt(myaudio.currentTime);
+        var timelength = myaudio.duration;
+        if (isNaN(timelength)) {
+          this.tipshow = true;
+        } else {
+          this.tipshow = false;
+          this.mwidth = time / timelength * 100;
+          this.time.start = this.changeTime(time);
+          this.time.end = this.changeTime(timelength);
+          if (timelength === time) {
+            this.togglePlay();
+          }
+        }
+    },
+    canPlaySong(song) {
+      if (song.url) {
+        document.getElementById("audioPlay").play();
+      }
+    },
+    changeTime(time) {
+      var minute = parseInt(time / 60);
+      if (minute < 10) {
+        minute = "0" + minute;
+      }
+      var secound = parseInt(time % 60);
+      if (secound < 10) {
+        secound = "0" + secound;
+      }
+      return minute + ":" + secound;
+    },
+    setTime(value) {
+        var myaudio = document.getElementById('audioPlay');
+        var timelength = myaudio.duration;
+        myaudio.currentTime = timelength * value / 100;
+      }
   }
 };
 </script>
 <style  lang="stylus" rel="stylesheet/stylus"  scoped>
+$Bcolor = rgba(254, 254, 254, 0.8);
+
 border-1px($color) {
     position: relative;
 
@@ -160,7 +240,7 @@ border-1px($color) {
 
     .menu-title {
         display: flex;
-        border-1px(#ddd);
+        border-1px(rgba(226, 226, 226, 0.18));
 
         .back {
             flex-basis: 40px;
@@ -176,10 +256,15 @@ border-1px($color) {
             flex: 1;
             display: inline-block;
             height: 48px;
-            line-height: 48px;
+            line-height: 30px;
             text-align: center;
             font-size: 18px;
             color: #fff;
+
+            p {
+                font-size: 12px;
+                line-height: 10px;
+            }
         }
 
         .setting {
@@ -256,28 +341,14 @@ border-1px($color) {
                 flex: 1;
                 display: inline-block;
                 height: 60px;
+                line-height: 60px;
+                color: $Bcolor;
                 background-repeat: no-repeat;
                 background-position: center center;
-            }
 
-            span:nth-child(1) {
-                background-image: url('../../static/img/collect.png');
-                background-size: 30px 30px;
-            }
-
-            span:nth-child(2) {
-                background-image: url('../../static/img/down.png');
-                background-size: 24px 24px;
-            }
-
-            span:nth-child(3) {
-                background-image: url('../../static/img/chat.png');
-                background-size: 24px 24px;
-            }
-
-            span:nth-child(4) {
-                background-image: url('../../static/img/morew.png');
-                background-size: 24px 24px;
+                .icon {
+                    font-size: 30px;
+                }
             }
         }
 
@@ -316,33 +387,77 @@ border-1px($color) {
                 height: 60px;
                 background-repeat: no-repeat;
                 background-position: center center;
+                color: $Bcolor;
 
-                &.isplay {
-                    background-image: url('../../static/img/play.png');
-                    background-size: 60px 60px;
+                &.playBtn {
+                    .icon {
+                        box-sizing: border-box;
+                        width: 40px;
+                        height: 40px;
+                        line-height: 38px;
+                        font-size: 30px;
+                        text-align: center;
+                        border: 1px solid $Bcolor;
+                        border-radius: 20px;
+                        margin-top: 10px;
+                        padding-left: 1px;
+
+                        &.ion-ios-play {
+                            padding-left: 3px;
+                        }
+                    }
                 }
 
+                &.nextBtn {
+                    .icon {
+                        font-size: 35px;
+                        border-right: 2px solid $Bcolor;
+                        margin-top: 20px;
+                        height: 23px;
+                        line-height: 23px;
+
+                        &::before {
+                            margin-top: -7px;
+                        }
+                    }
+
+                    &.preBtn {
+                        transform: rotate(180deg);
+                    }
+                }
+
+                &.order {
+                    padding-top: 10px;
+
+                    .icon {
+                        font-size: 35px;
+                    }
+                }
+
+                // &.isplay {
+                // background-image: url('../../static/img/play.png');
+                // background-size: 60px 60px;
+                // }
                 &.noplay {
                     background-image: url('../../static/img/pause.png');
                     background-size: 60px 60px;
                 }
             }
 
-            span:nth-child(1) {
-                background-image: url('../../static/img/seq.png');
-                background-size: 60px 60px;
-            }
+            // span:nth-child(1) {
+            // background-image: url('../../static/img/seq.png');
+            // background-size: 60px 60px;
+            // }
 
-            span:nth-child(2) {
-                background-size: 34px 34px;
-                background-image: url('../../static/img/pre_l.png');
-            }
+            // span:nth-child(2) {
+            // background-size: 34px 34px;
+            // background-image: url('../../static/img/pre_l.png');
+            // }
 
-            span:nth-child(4) {
-                background-image: url('../../static/img/pre_r.png');
-                background-size: 34px 34px;
-            }
-
+            // span:nth-child(4) {
+            // background-image: url('../../static/img/pre_r.png');
+            // background-size: 34px 34px;
+            // }
             span:nth-child(5) {
                 background-image: url('../../static/img/list.png');
                 background-size: 60px 60px;

@@ -10,4 +10,7 @@ export default {
     [types.SHIT](state, msg) {
         state.test = msg
     },
+    [types.TOGGLEPLAY](state, status) {
+        state.playing = status
+    }
 }
