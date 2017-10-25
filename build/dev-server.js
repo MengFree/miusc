@@ -1,6 +1,6 @@
 'use strict'
 require('./check-versions')()
-
+var glob = require('glob');
 const config = require('../config')
 if (!process.env.NODE_ENV) {
     process.env.NODE_ENV = JSON.parse(config.dev.env.NODE_ENV)
@@ -42,7 +42,15 @@ const hotMiddleware = require('webpack-hot-middleware')(compiler, {
     //     cb()
     //   })
     // })
-
+var apis = glob.sync(path.join(__dirname, '../server/router/*.js'));
+apis.forEach(function(api) {
+    var name = path.basename(api);
+    var extname = path.extname(api);
+    name = name.replace(extname, '');
+    name = name.split('_').join('/');
+    app.use('/music/' + name, require(api));
+    console.log(name, api);
+});
 app.use("/api", require("../server"))
 
 // enable hot-reload and state-preserving

@@ -73,7 +73,7 @@ export default {
       });
       // this.$api.getPlaylists().then(res=>{
       //     this.lists.push({
-      //         title:'推荐歌单',
+      //         title:'精品',
       //         playlists:res.data.playlists
       //     })
       // })
@@ -90,7 +90,9 @@ export default {
   bottom: 0;
   overflow: hidden;
   background: #fff;
-
+  .hello{
+    padding-bottom: 50px;
+  }
   .my-swipe {
     height: 139px;
     color: #fff;

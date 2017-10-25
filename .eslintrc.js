@@ -35,10 +35,10 @@ module.exports = {
         // }],
         // allow debugger during development
         'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
-        "indent": [
-            "warn",
-            2
-        ],
+        // "indent": [
+        //     "warn",
+        //     4
+        // ],
         "quotes": [
             "off",
             "double"
