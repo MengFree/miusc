@@ -6,7 +6,7 @@
                     <img src="../../static/img/back.png" alt="" width=24 height=24>
                 </div>
                 <div class="title-name">
-                歌单
+                  歌单
                 </div>
                 <router-link to="/player" tag="div" class="setting">
                   <img src="../../static/img/ph.png" alt="" width=24 height=24>
@@ -62,7 +62,7 @@
                     <div class="menu-list">
                         <div class="list-title">
                         <div class="img"></div>
-                        <div class="title border-1px">
+                        <div class="title border-1px" @click="play()">
                             播放全部
                             <span>(共{{detail.trackCount}}首)</span>
                         </div>
@@ -73,15 +73,15 @@
                                 <div class="img" :class="{'active': number===index}">
                                 {{index + 1}}
                                 </div>
-                                <div class="title border-1px" >
-                            <span class="music-name" :class="{'active': number===index}">
-                                {{item.name}}
-                            </span>
-                                <p>
-                                    <i v-show="item.sq"></i>
-                                    <span :class="{'active': number===index}">{{item.artists[0].name}} - {{item.album.name}}</span>
-                                </p>
-                                </div>
+                            <div class="title border-1px" @click="play(item.id)">
+                              <span class="music-name" :class="{'active': number===index}" >
+                                  {{item.name}}
+                              </span>
+                              <p>
+                                <i v-show="item.sq"></i>
+                                <span :class="{'active': number===index}">{{item.artists[0].name}} - {{item.album.name}}</span>
+                              </p>
+                            </div>
                                 <div class="menu border-1px" v-show="item.movie">
                                 <div class="menu-img"></div>
                                 </div>
@@ -94,7 +94,7 @@
                         </ul>
                     </div>
             </div>
-                </scroll>
+          </scroll>
         </div>
     <!-- </div> -->
 </template>
@@ -124,7 +124,7 @@ export default {
   // 挂载后
   mounted() {
     let id = this.$route.params.id;
-    if (!id) return;
+    if (!id) return this.$router.push('/');
     // this.$api.getPlayDetail(id).then(res=>{
     //     console.log(res.data);
     // })
@@ -137,7 +137,20 @@ export default {
   methods: {
     goBack() {
       this.$router.go(-1);
-    }
+    },
+    play(id){
+      var list=this.detail.tracks;
+      this.$store.dispatch('CHANGELIST',list).then(res=>{
+        this.$set(this.detail,'tracks',res);
+        id=id||list[0].id;
+        this.playSong(id)
+      })
+    },
+    playSong(id){
+      this.$store.dispatch('PLAYSONG',id);
+      this.$router.push('/player');
+        console.log('play',id);
+    },
   }
 };
 </script>

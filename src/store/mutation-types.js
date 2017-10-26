@@ -1,3 +1,5 @@
 export const SHIT = "SHIT"
 export const LOADING = "LOADING"
 export const TOGGLEPLAY = "TOGGLEPLAY"
+export const CHANGELIST = "CHANGELIST"
+export const PLAYSONG = "PLAYSONG"

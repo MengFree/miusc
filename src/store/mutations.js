@@ -12,5 +12,12 @@ export default {
     },
     [types.TOGGLEPLAY](state, status) {
         state.playing = status
+    },
+    [types.CHANGELIST](state, list) {
+        state.playList = list
+    },
+    [types.PLAYSONG](state, song) {
+        state.song = song;
+        state.playing = true;
     }
 }

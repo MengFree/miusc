@@ -41,23 +41,9 @@ export const getDetail = function(id) {
 }
 
 export const getSongUrl = function(id) {
-    let url = '/163/weapi/song/enhance/player/url';
-    // return axios.post(url, {
-    //     ids: [id],
-    //     br: 999000,
-    //     csrf_token: ''
-    // })
-    var data = {
-        ids: [id],
-        br: 999000,
-        csrf_token: ''
-    };
-    console.log(data);
-    return axios({
-        method: 'post',
-        url: url,
-        data: data
-    })
+    // let url = '/music/musicUrl?id=' + id;
+    // return axios.get(url)
+    return Promise.resolve(datas.urls);
 }
 
 export const test = function(id) {

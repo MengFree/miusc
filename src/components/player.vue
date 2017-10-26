@@ -1,8 +1,8 @@
 <template>
     <div class="musicsong-wrapper" key="musicsong">
-      <div class="scroll-warpper">
+      <div class="scroll-warpper" v-if="song">
         <div class="menu-title border-1px">
-          <div class="back">
+          <div class="back" @click="back">
             <img src="../../static/img/back.png" alt="" width=24 height=24>
           </div>
           <div class="title-name">
@@ -57,8 +57,8 @@
         <img :src="song.album.blurPicUrl" alt="" width="100%" height="100%">
       </div>
       <div class="">
-        <audio :src="song.url" id="audioPlay" @canplay="canPlaySong" preload
-               @timeupdate="updateTime"
+        <audio ref="audio" :src="song.url" id="audioPlay" @canplay="canPlaySong" preload
+               @timeupdate="updateTime" @onError="playError"
         ></audio>
       </div>
       <!-- <div class="tip" v-show="tipshow">
@@ -95,9 +95,15 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
-import progressslider from './base/progressslider'
+import progressslider from "./base/progressslider";
 export default {
   name: "player",
+  beforeCreate() {
+    console.log(this.$store.state);
+    if (!this.$store.state.song) {
+      return this.$router.push("/");
+    }
+  },
   data() {
     return {
       //   playing: true,
@@ -109,20 +115,16 @@ export default {
           name: "name"
         }
       ],
-      //   song: {
-      //     songname: "songname",
-      //     name: "name"
-      //   },
       time: {
-        start: '00:00',
-        end: '00:00'
+        start: "00:00",
+        end: "00:00"
       },
-      mwidth:0
+      mwidth: 0
     };
   },
   // 组件
   components: {
-      progressslider
+    progressslider
   },
   // 计算属性
   computed: {
@@ -138,9 +140,20 @@ export default {
     }
   },
   // 挂载后
-  mounted() {},
+  mounted() {
+    if (this.playing) {
+        var that=this;
+      this.$refs.audio.load();
+      setTimeout(function() {
+          that.canPlaySong();
+      }, 1000);
+    }
+  },
   // 方法
   methods: {
+    back() {
+      this.$router.go(-1);
+    },
     pre() {},
     togglePlay() {
       // if(this.playing){
@@ -148,7 +161,7 @@ export default {
       // }else{
       //     this.playing=true;
       // }
-      this.$store.dispatch("TOGGLEPLAY", !this.playing);
+      this.$store.commit("TOGGLEPLAY", !this.playing);
       this.$nextTick(function() {
         if (!this.playing) {
           document.getElementById("audioPlay").pause();
@@ -159,27 +172,59 @@ export default {
         }
       });
     },
-    next() {},
-    showlist() {},
-    updateTime() {
-        var myaudio = document.getElementById('audioPlay');
-        var time = parseInt(myaudio.currentTime);
-        var timelength = myaudio.duration;
-        if (isNaN(timelength)) {
-          this.tipshow = true;
-        } else {
-          this.tipshow = false;
-          this.mwidth = time / timelength * 100;
-          this.time.start = this.changeTime(time);
-          this.time.end = this.changeTime(timelength);
-          if (timelength === time) {
-            this.togglePlay();
-          }
+    next() {
+        let list=this.playList;
+        let song=this.song;
+        for (var i = 0; i < list.length; i++) {
+            var s = list[i];
+            if(s.id==song.id){
+                break;
+            }
         }
+        if(++i<list.length){
+            this.$store.dispatch('PLAYSONG',list[i].id);
+            this.$nextTick(function(){
+                this.canPlaySong();
+            })
+        }
+        console.log(i);
     },
-    canPlaySong(song) {
-      if (song.url) {
-        document.getElementById("audioPlay").play();
+    showlist() {},
+    playError(){
+        console.log('playErrorplayErrorplayErrorplayError');
+        this.$store.commit("TOGGLEPLAY", false);
+    },
+    updateTime() {
+    //   var myaudio = document.getElementById("audioPlay");\
+        var myaudio = this.$refs.audio
+      var time = parseInt(myaudio.currentTime);
+      var timelength = myaudio.duration;
+      if (isNaN(timelength)) {
+        this.tipshow = true;
+      } else {
+        this.tipshow = false;
+        this.mwidth = time / timelength * 100;
+        this.time.start = this.changeTime(time);
+        this.time.end = this.changeTime(timelength);
+        if (timelength === time) {
+          this.togglePlay();
+          console.log('end!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+        }
+      }
+    },
+    playend:function (){
+            console.log('over');
+            this.$store.commit("TOGGLEPLAY", false);
+        },
+    canPlaySong() {
+        var that=this;
+      if (this.song.url) {
+        var myaudio = this.$refs.audio
+        myaudio.play();
+        that.$store.commit("TOGGLEPLAY", true);
+        console.log('addEventListener');
+        myaudio.removeEventListener('ended' , this.playend ,false);
+        myaudio.addEventListener('ended', this.playend, false);
       }
     },
     changeTime(time) {
@@ -194,10 +239,10 @@ export default {
       return minute + ":" + secound;
     },
     setTime(value) {
-        var myaudio = document.getElementById('audioPlay');
-        var timelength = myaudio.duration;
-        myaudio.currentTime = timelength * value / 100;
-      }
+      var myaudio = document.getElementById("audioPlay");
+      var timelength = myaudio.duration;
+      myaudio.currentTime = timelength * value / 100;
+    }
   }
 };
 </script>

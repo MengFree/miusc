@@ -57,7 +57,6 @@ export default{
     setValue(e) {
       let value = (e.clientX - this.$el.getBoundingClientRect().left) / this.$el.offsetWidth * 100;
       value = parseFloat(value.toFixed(5));
-      console.log(value);
       if (value > 100) {
         value = 100;
       } else if (value < 0) {

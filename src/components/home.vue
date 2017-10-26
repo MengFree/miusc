@@ -62,16 +62,22 @@ export default {
   computed: {},
   // 挂载后
   mounted() {
-      this.$api.getSongUrl(410925920).then(res=>{
-          console.log('done')
-      }).catch(e=>{
-          console.log('error',e);
-      })
-      this.$api.test(410925921).then(res=>{
-          console.log('done')
-      }).catch(e=>{
-          console.log('error',e);
-      })
+    // this.$api
+    //   .getSongUrl(410925920)
+    //   .then(res => {
+    //     console.log("done");
+    //   })
+    //   .catch(e => {
+    //     console.log("error", e);
+    //   });
+    // this.$api
+    //   .test(410925921)
+    //   .then(res => {
+    //     console.log("done");
+    //   })
+    //   .catch(e => {
+    //     console.log("error", e);
+    //   });
   },
   // 方法
   methods: {
