@@ -2,6 +2,7 @@
 require('./check-versions')()
 var glob = require('glob');
 const config = require('../config')
+var logger = require('morgan');
 if (!process.env.NODE_ENV) {
     process.env.NODE_ENV = JSON.parse(config.dev.env.NODE_ENV)
 }
@@ -42,6 +43,7 @@ const hotMiddleware = require('webpack-hot-middleware')(compiler, {
     //     cb()
     //   })
     // })
+app.use(logger('dev'));
 var apis = glob.sync(path.join(__dirname, '../server/router/*.js'));
 apis.forEach(function(api) {
     var name = path.basename(api);

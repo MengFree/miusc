@@ -19,11 +19,15 @@ export default {
   computed: {
     ...mapState(["loading"]),
   },
+  mounted(){
+    document.getElementById('bg').remove();
+  }
 };
 </script>
 
 <style lang="less">
 @import './assets/css/reset.css';
+@import './assets/css/animate.css';
 @import './assets/css/ionicons.min.css';
 #app {
   // font-family: "Avenir", Helvetica, Arial, sans-serif;

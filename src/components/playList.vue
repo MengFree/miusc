@@ -70,16 +70,16 @@
                         </div>
                         <ul class="list-ul">
                             <li v-for="(item, index) in detail.tracks" :key="item.id">
-                                <div class="img" :class="{'active': number===index}">
+                                <div class="img" :class="{'active': song&&song.id===item.id}">
                                 {{index + 1}}
                                 </div>
                             <div class="title border-1px" @click="play(item.id)">
-                              <span class="music-name" :class="{'active': number===index}" >
+                              <span class="music-name" :class="{'active':  song&&song.id===item.id}" >
                                   {{item.name}}
                               </span>
                               <p>
                                 <i v-show="item.sq"></i>
-                                <span :class="{'active': number===index}">{{item.artists[0].name}} - {{item.album.name}}</span>
+                                <span :class="{'active':  song&&song.id===item.id}">{{item.artists[0].name}} - {{item.album.name}}</span>
                               </p>
                             </div>
                                 <div class="menu border-1px" v-show="item.movie">
@@ -117,6 +117,9 @@ export default {
   },
   // 计算属性
   computed: {
+    ...mapState([
+      'song'
+    ]),
     id() {
       return this.$route.params.id;
     }

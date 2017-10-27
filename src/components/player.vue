@@ -1,6 +1,7 @@
 <template>
-    <div class="musicsong-wrapper" key="musicsong">
-      <div class="scroll-warpper" v-if="song">
+<transition name="player-transition"  enter-active-class="animated fadeInUp" leave-active-class=" animated fadeOutDown">
+    <div class="musicsong-wrapper" key="musicsong" v-if="song">
+      <div class="scroll-warpper">
         <div class="menu-title border-1px">
           <div class="back" @click="back">
             <img src="../../static/img/back.png" alt="" width=24 height=24>
@@ -40,13 +41,13 @@
             <span class="order">
                 <i class="icon ion-ios-reload"></i>
             </span>
-            <span @click="pre" class="nextBtn preBtn">
+            <span @click="changeSong(false)" class="nextBtn preBtn">
                 <i class="icon ion-ios-play-outline"></i>
             </span>
-            <span @click="togglePlay" class="playBtn">
+            <span @click="togglePlay()" class="playBtn">
                 <i class="icon" :class="{'ion-ios-pause':playing,'ion-ios-play':!playing}"></i>
             </span>
-            <span @click="next" class="nextBtn">
+            <span @click="changeSong(true)" class="nextBtn">
                 <i class="icon ion-ios-play-outline"></i>
             </span>
             <span @click="showlist"></span>
@@ -56,11 +57,7 @@
       <div class="bg">
         <img :src="song.album.blurPicUrl" alt="" width="100%" height="100%">
       </div>
-      <div class="">
-        <audio ref="audio" :src="song.url" id="audioPlay" @canplay="canPlaySong" preload
-               @timeupdate="updateTime" @onError="playError"
-        ></audio>
-      </div>
+      
       <!-- <div class="tip" v-show="tipshow">
         <div class="content">
           歌曲加载错误！
@@ -69,33 +66,43 @@
           确定
         </div>
       </div> -->
+      <transition name="list-transition"  enter-active-class="animated fadeInUp" leave-active-class=" animated fadeOutDown">
       <div class="list" v-show="showAction">
-        <transition name="fade">
-          <div class="list-bg"  ></div>
+        <transition name="list-bg-transition" enter-active-class="animated fadeIn" leave-active-class=" animated fadeOut">
+          <div class="list-bg"  @click="showlist"></div>
         </transition >
-        <transition name="fold">
+        <transition name="list-song-transition"  enter-active-class="animated fadeInUp" leave-active-class=" animated fadeOutDown">
           <div class="list-song" v-show="showAction">
-            <div class="title">清空</div>
-            <div ref="songlistWrapper" class="ul-song">
+            <div class="title  border-1px">清空</div>
+            <scroll ref="songlistWrapper" :data="playList" class="ul-song">
               <ul>
-                <li v-for="(item,index) in list" :key="item.songname" class="li border-1px" >
-                  <div :class="{'active':item.songname === song.songname}">
-                    <span>{{index}}</span>
-                    <span>{{item.songname}}</span>
+                <li v-for="(item,index) in playList" :key="item.songname" class="li border-1px" >
+                  <div class="list-content" :class="{'active':song&&item.id === song.id}">
+                    <i class="icon ion-volume-medium"></i>
                     <span>{{item.name}}</span>
+                    -
+                    <span class="list-name">{{getSinger(item)}}</span>
                   </div>
                 </li>
               </ul>
-            </div>
+            </scroll>
+            <div class="title"  @click="showlist">关闭</div>
           </div>
         </transition>
       </div>
+      </transition>
+      <div class="">
+        <audio ref="audio" :src="song.url" id="audioPlay" @canplay="canPlaySong" preload
+               @timeupdate="updateTime" @error="playError" @ended="playend"
+        ></audio>
+      </div>
     </div>
+</transition>
 </template>
-
 <script>
 import { mapState, mapActions } from "vuex";
 import progressslider from "./base/progressslider";
+import scroll from './base/scroll'
 export default {
   name: "player",
   beforeCreate() {
@@ -108,7 +115,7 @@ export default {
     return {
       //   playing: true,
       showFlag: true,
-      showAction: false,
+      showAction: true,
       list: [
         {
           songname: "songname",
@@ -124,11 +131,12 @@ export default {
   },
   // 组件
   components: {
-    progressslider
+    progressslider,
+    scroll,
   },
   // 计算属性
   computed: {
-    ...mapState(["playing", "playList", "song"]),
+    ...mapState(["playing", "playList", "song", "playType"]),
     singer: function() {
       var name = [];
       if (this.song && this.song.artists) {
@@ -141,11 +149,14 @@ export default {
   },
   // 挂载后
   mounted() {
+      if (!this.$store.state.song) {
+      return this.$router.push("/");
+    }
     if (this.playing) {
-        var that=this;
+      var that = this;
       this.$refs.audio.load();
       setTimeout(function() {
-          that.canPlaySong();
+        that.canPlaySong();
       }, 1000);
     }
   },
@@ -154,49 +165,73 @@ export default {
     back() {
       this.$router.go(-1);
     },
+    getSinger(song) {
+        var name = [];
+        if (song && song.artists) {
+            for (var i = 0; i < song.artists.length; i++) {
+            name.push(song.artists[i].name);
+            }
+        }
+        return name.join("/");
+    },
     pre() {},
-    togglePlay() {
-      // if(this.playing){
-      //     this.playing=false;
-      // }else{
-      //     this.playing=true;
-      // }
+    togglePlay(stop) {
+      if (stop) {
+        return this.$store.commit("TOGGLEPLAY", false);
+      }
       this.$store.commit("TOGGLEPLAY", !this.playing);
       this.$nextTick(function() {
         if (!this.playing) {
-          document.getElementById("audioPlay").pause();
+          this.$refs.audio.pause();
           console.log("pause");
         } else {
+            this.$refs.audio.play().catch(e=>{
+                this.$store.commit("TOGGLEPLAY", false)
+            });
           console.log("play");
-          document.getElementById("audioPlay").play();
         }
       });
     },
-    next() {
-        let list=this.playList;
-        let song=this.song;
+    changeSong(n) {
+      let list = this.playList;
+      let song = this.song;
+      if (this.playType === "order") {
         for (var i = 0; i < list.length; i++) {
-            var s = list[i];
-            if(s.id==song.id){
-                break;
-            }
+          var s = list[i];
+          if (s.id == song.id) {
+            break;
+          }
         }
-        if(++i<list.length){
-            this.$store.dispatch('PLAYSONG',list[i].id);
-            this.$nextTick(function(){
-                this.canPlaySong();
-            })
+        if (n) {
+          i++;
+        } else {
+          i--;
         }
-        console.log(i);
+        if (i < list.length && i >= 0) {
+          this.$store.dispatch("PLAYSONG", list[i].id);
+          this.time={
+          start:'00:00',
+          end:'00:00'
+      }
+          this.$nextTick(function() {
+            // this.canPlaySong();
+            this.$refs.audio.load()
+          });
+        } else {
+          this.togglePlay(true);
+        }
+      }
     },
-    showlist() {},
-    playError(){
-        console.log('playErrorplayErrorplayErrorplayError');
-        this.$store.commit("TOGGLEPLAY", false);
+    showlist() {
+        this.showAction=!this.showAction;
+    },
+    playError() {
+      console.log("playErrorplayErrorplayErrorplayError");
+      this.$store.commit("TOGGLEPLAY", false);
     },
     updateTime() {
-    //   var myaudio = document.getElementById("audioPlay");\
-        var myaudio = this.$refs.audio
+      //   var myaudio = document.getElementById("audioPlay");\
+      var myaudio = this.$refs.audio;
       var time = parseInt(myaudio.currentTime);
       var timelength = myaudio.duration;
       if (isNaN(timelength)) {
@@ -208,23 +243,27 @@ export default {
         this.time.end = this.changeTime(timelength);
         if (timelength === time) {
           this.togglePlay();
-          console.log('end!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
         }
       }
     },
-    playend:function (){
-            console.log('over');
-            this.$store.commit("TOGGLEPLAY", false);
-        },
+    playend: function() {
+      console.log("over");
+      // this.$store.commit("TOGGLEPLAY", false);
+      this.time={
+          start:'00:00',
+          end:'00:00'
+      }
+      this.changeSong(true);
+    },
     canPlaySong() {
-        var that=this;
+      var that = this;
       if (this.song.url) {
-        var myaudio = this.$refs.audio
+        var myaudio = this.$refs.audio;
         myaudio.play();
         that.$store.commit("TOGGLEPLAY", true);
-        console.log('addEventListener');
-        myaudio.removeEventListener('ended' , this.playend ,false);
-        myaudio.addEventListener('ended', this.playend, false);
+        // console.log("addEventListener");
+        // myaudio.removeEventListener("ended", this.playend, false);
+        // myaudio.addEventListener("ended", this.playend, false);
       }
     },
     changeTime(time) {
@@ -262,7 +301,8 @@ border-1px($color) {
         content: '';
     }
 }
-
+.border-1px
+    border-1px( rgba(162, 157, 163, 0.4))
 .musicsong-wrapper {
     position: absolute;
     top: 0;
@@ -565,11 +605,12 @@ border-1px($color) {
         background: rgba(0, 0, 0, 0.4);
 
         &.fade-enter-active, &.fade-leave-active {
-            transition: all 0.3s linear;
+            transition: all 1.5s linear;
             opacity: 1;
         }
 
-        &.fade-enter, &.fade-leave-active {
+        &.fade-enter, &.fade-leave-to {
+            transition: all 1.5s linear;
             opacity: 0;
         }
     }
@@ -582,19 +623,20 @@ border-1px($color) {
         z-index: 201;
         background: rgba(255, 255, 255, 0.8);
 
-        &.fold-enter-active, &.fold-leave-active {
+        &.fold-enter-active, &.fold-leave-active  {
             transition: all 0.2s linear;
+        }
+        &.fold-enter-to,&.fold-leave{
             opacity: 1;
             transform: translate3d(0, 0, 0);
-        }
-
-        &.fold-enter, &.fold-leave-active {
+        }    
+        &.fold-enter, &.fold-leave-to {
             transform: translate3d(0, 100%, 0);
             opacity: 0;
         }
 
         .title {
-            width: 90%;
+            width: 100%;
             margin: 0 auto;
             height: 50px;
             line-height: 50px;
@@ -603,14 +645,30 @@ border-1px($color) {
         .ul-song {
             max-height: 300px;
             overflow: hidden;
-
+            text-align left
             li {
                 padding-left: 10px;
                 margin: 0 auto;
                 height: 50px;
                 line-height: 50px;
-
+                .list-content{
+                    width: 100%;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+                .list-name{
+                    font-size 14px
+                    color #999999    
+                }
+                .icon {
+                    display none    
+                }
                 .active {
+                    .icon {
+                        display inline-block
+                        color #d33a31
+                    }
                     span {
                         color: #d33a31;
                     }
