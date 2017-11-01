@@ -5,9 +5,11 @@
         LOADING
       </div>
     </div>
-    <keep-alive>
-      <router-view/>
-    </keep-alive>
+    <transition name="main-transition"  enter-active-class="animated slideInRight" leave-active-class=" animated slideOutLeft">
+      <keep-alive>
+        <router-view/>
+      </keep-alive>
+    </transition>
   </div>
 </template>
 

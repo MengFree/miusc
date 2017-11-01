@@ -1,5 +1,5 @@
 <template>
-<transition name="player-transition"  enter-active-class="animated fadeInUp" leave-active-class=" animated fadeOutDown">
+<transition name="player-transition"  enter-active-class="animated slideInRight" leave-active-class=" animated slideOutRight">
     <div class="musicsong-wrapper" key="musicsong" v-if="song">
       <div class="scroll-warpper">
         <div class="menu-title border-1px">
