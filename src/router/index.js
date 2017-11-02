@@ -8,6 +8,7 @@ const video = r => require.ensure([], () => r(require('../components/base/home/v
 const radio = r => require.ensure([], () => r(require('../components/base/home/radio')), 'radio');
 const playList = r => require.ensure([], () => r(require('../components/playList')), 'playList');
 const player = r => require.ensure([], () => r(require('../components/player')), 'player');
+const test = r => require.ensure([], () => r(require('../components/test')), 'test');
 
 
 Vue.use(Router);
@@ -45,6 +46,10 @@ export default new Router({
             path: '/player',
             name: 'player',
             component: player
+        }, {
+            path: '/test',
+            name: 'test',
+            component: test
         }
         // {
         //     path: '*',
