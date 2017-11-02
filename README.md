@@ -369,4 +369,4 @@ functionaddEvent(obj,event,fn){
 >关于传输数据的大小
 >>在HTTP规范中，没有对URL的长度和传输的数据大小进行限制。但是在实际开发过程中，对于GET，特定的浏览器和服务器对URL的长度有限制。因此，在使用GET请求时，传输数据会受到URL长度的限制。对于POST，由于不是URL传值，理论上是不会受限制的，但是实际上各个服务器会规定对POST提交数据大小进行限制，Apache、IIS都有各自的配置。
 ---------------
-![asfas](./static/img/1.png)
+![asfas](./static/img/12.png)
