@@ -23,30 +23,28 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 ```javascript
 function clone(obj) {
     var val;
-    switch (typeof obj) {
-        case "undefined":
-            break;
-        case "string":
+    var type=Object.prototype.toString.call(obj).slice(8,-1)
+    switch (type) {
+        case "String":
             val = obj + '';
             break;
-        case "number":
+        case "Number":
             val = obj - 0;
             break;
-        case "object":
-            if (isArray(obj)) {
-                val = [];
-                for (var i = 0; i < obj.length; i++) {
-                    var tmp = obj[i];
-                    val.push(clone(tmp));
+        case "Object":
+            val = {};
+            for (var key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    var p = obj[key];
+                    val[key] = clone(p);
                 }
-            } else if (typeof obj === "object") {
-                val = {};
-                for (var key in obj) {
-                    if (obj.hasOwnProperty(key)) {
-                        var p = obj[key];
-                        val[key] = clone(p);
-                    }
-                }
+            }
+            break;
+        case "Array":
+            val = [];
+            for (var i = 0; i < obj.length; i++) {
+                var tmp = obj[i];
+                val.push(clone(tmp));
             }
             break;
         default:
@@ -135,7 +133,7 @@ Array.prototype.unit = function() {
     return lice;
 }
 ```
->方法二：
+>方法二：(无法区分字符串`string`与数字`number`)
 ```javascript
 Array.prototype.$unit = function() {
     let me = this;
@@ -144,7 +142,7 @@ Array.prototype.$unit = function() {
     for (var i = 0, len = me.length; i < len; i++) {
         let m = me[i];
         if (tmp[m] === undefined) {
-            tmp[m] = true
+            tmp[m] = true;//以val做键值不能区分string、number 例如  1 和 '1'
         } else {
             // lice.push(me.splice(i, 1)[0]);
             lice = lice.concat(me.splice(i, 1));
@@ -369,4 +367,4 @@ functionaddEvent(obj,event,fn){
 >关于传输数据的大小
 >>在HTTP规范中，没有对URL的长度和传输的数据大小进行限制。但是在实际开发过程中，对于GET，特定的浏览器和服务器对URL的长度有限制。因此，在使用GET请求时，传输数据会受到URL长度的限制。对于POST，由于不是URL传值，理论上是不会受限制的，但是实际上各个服务器会规定对POST提交数据大小进行限制，Apache、IIS都有各自的配置。
 ---------------
-![asfas](./static/img/12.png)
+
